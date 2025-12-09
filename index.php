@@ -11,7 +11,7 @@
 
     if($_SERVER['REQUEST_METHOD'] == 'POST'){
         $tipoSentencia = 'POST';
-        $titulo = $_POST['titulo'];                     // Definir variables  preparadas para insertar.
+        $titulo = $_POST['titulo'];                     // Recibir las variables desde el formulario.
         $descripcion = $_POST['descripcion'];  
         if(!empty($titulo)){                            // Validación para que no este vacio.
             $sql = "INSERT INTO tareas (titulo,descripcion) VALUES (:titulo, :descripcion)";   // Consulta SQL 
@@ -25,7 +25,10 @@
             $mensaje = "El titulo es obligatorio";
         }
     }
-    // Step 2: Listar los datos de la base de datos en una variable tareas.
+    /**
+     * Tener en cuenta es un listado inmediato, sin pasar ningun parametro por lo que usamos query() 
+     * Si se utilizara query(), en una consulta con parametros, hay riesgo de una inyeccion sql.
+     */
     $statement = $pdo->query("SELECT * FROM tareas ORDER BY creado_en DESC");  //Definir una variable con una sentencia,
     $tareas = $statement ->fetchAll(PDO::FETCH_ASSOC);                          //Extraer todas las filas en un array.
 
@@ -58,7 +61,9 @@
                 <?php endif; ?>
                 
                 <a href="editar.php?id=<?= $tarea['id'] ?>">Editar</a>
-                <a href="eliminar.php?id=<?= $tarea['id'] ?>">Eliminar</a>
+                <a href="eliminar.php?id=<?= $tarea['id'] ?>" 
+                    onclick="return confirm('¿Estás seguro de que quieres borrar esta tarea?');"
+                    style="color: red;">Eliminar</a>
             </li>
         <?php endforeach; ?>
 

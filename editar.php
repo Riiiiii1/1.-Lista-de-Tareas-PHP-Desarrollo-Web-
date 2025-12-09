@@ -28,7 +28,7 @@
             header('Location: index.php');  // Redireccionar a la pagina principal (READ)
             exit;
         }catch(PDOException $e){
-            die('La actualización fallo');
+            die('La actualización fallo' . $e->getMessage());
         }
     }
     // Step 3: Incluimos una funcion de listar en el formulario (inputs), para que el usuario vea el registro anterior. 

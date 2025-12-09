@@ -15,6 +15,49 @@
         $titulo = $_POST['titulo'];
         $descripcion = $_POST['descripcion'];   
         $sql = "UPDATE tareas SET titulo = :titulo, descripcion = :descripcion WHERE id = :id";
-    }
+        $statement = $pdo->prepare($sql);
 
+        try{
+            $statement->execute(
+                [
+                    ':titulo'=>$titulo,             // Insertar el nuevo titulo desde el input
+                    ':descripcion'=>$descripcion,   // Insertar nueva descripcion desde el input
+                    ':id'=>$id                      // Cargar el id del registro de donde se va a ejecutar.
+                ]
+            );
+            header('Location: index.php');  // Redireccionar a la pagina principal (READ)
+            exit;
+        }catch(PDOException $e){
+            die('La actualización fallo');
+        }
+    }
+    // Step 3: Incluimos una funcion de listar en el formulario (inputs), para que el usuario vea el registro anterior. 
+    $statement = $pdo->prepare('SELECT * FROM tareas WHERE id = :id');  // Preparar la sentencia para listar con select
+    $statement ->execute([ ':id' => $id]);                             // Cargar el unico parametro que es el id.
+    $tarea = $statement -> fetch(PDO::FETCH_ASSOC);                     // Fech ya que solo se espera un registro no un array.
+    if(!$tarea){
+        die('La Tarea que busca no se encuentra en la base de datos.');
+    }
 ?>
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Editar Tarea</title>
+</head>
+<body>
+    <h1>Editar Tarea</h1>
+    
+    <form method="POST">
+        <label>Título:</label><br>
+        <input type="text" name="titulo" value="<?= htmlspecialchars($tarea['titulo']) ?>" required><br><br>
+        
+        <label>Descripción:</label><br>
+        <textarea name="descripcion"><?= htmlspecialchars($tarea['descripcion']) ?></textarea><br><br>
+        
+        <button type="submit">Actualizar</button>
+        <a href="index.php">Cancelar</a>
+    </form>
+</body>
+</html>

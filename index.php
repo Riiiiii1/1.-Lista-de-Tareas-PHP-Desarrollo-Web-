@@ -62,8 +62,9 @@
                 
                 <a href="editar.php?id=<?= $tarea['id'] ?>">Editar</a>
                 <a href="eliminar.php?id=<?= $tarea['id'] ?>" 
-                    onclick="return confirm('¿Estás seguro de que quieres borrar esta tarea?');"
-                    style="color: red;">Eliminar</a>
+                onclick="return confirm('¿Estás seguro de que quieres borrar esta tarea?');"
+                style="color: red;">Eliminar
+                </a>
             </li>
         <?php endforeach; ?>
 

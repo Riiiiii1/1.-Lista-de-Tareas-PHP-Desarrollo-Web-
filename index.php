@@ -14,7 +14,7 @@
 
 
     require 'conexion.php';
-    $usuario = "puta";
+    $usuario = "";
     $mensaje = "";
     $tipoSentencia = "";
     // Step 1:  Si el metodo request es igual a INSERCION (POST) ejecuta lo siguiente. 
@@ -24,9 +24,13 @@
         $titulo = $_POST['titulo'];                     // Recibir las variables desde el formulario.
         $descripcion = $_POST['descripcion'];  
         if(!empty($titulo)){                            // Validación para que no este vacio.
-            $sql = "INSERT INTO tareas (titulo,descripcion) VALUES (:titulo, :descripcion)";   // Consulta SQL 
+            $sql = "INSERT INTO tareas (titulo,descripcion,user_id) VALUES (:titulo, :descripcion, :user_id)";   // Consulta SQL 
             $statement = $pdo->prepare($sql);     // Preparar sentencia llamando a la funciOn prepare(), pasando $sql
-            if($statement->execute([':titulo'=>$titulo, ':descripcion'=>$descripcion])){ //Si se ejecuta, envia true
+            if($statement->execute(
+                [':titulo'=>$titulo, 
+                ':descripcion'=>$descripcion, 
+                ':user_id'=>$_SESSION['user_id']   // NUEVO : Enviar a que usuario pertenece esa tarea
+                ])){ //Si se ejecuta, envia true
                 $mimensaje  = "Sentencia " . $tipoSentencia . "ejecutada con exito.";
             }else{
                 $mimensaje = "Sentencia " . $tipoSentencia . "fallo.";
@@ -39,8 +43,13 @@
      * Tener en cuenta es un listado inmediato, sin pasar ningun parametro por lo que usamos query() 
      * Si se utilizara query(), en una consulta con parametros, hay riesgo de una inyeccion sql.
      */
-    $statement = $pdo->query("SELECT * FROM tareas ORDER BY creado_en DESC");  //Definir una variable con una sentencia,
-    $tareas = $statement ->fetchAll(PDO::FETCH_ASSOC);                          //Extraer todas las filas en un array.
+    $sql = "SELECT * FROM tareas WHERE user_id = :user_id ORDER BY creado_en DESC";
+    $statement = $pdo->prepare($sql);  //NUEVO :  Usamos prepare porque es una lista contralada de tareas en funcion del usuario.
+    $statement -> execute([
+        ':user_id'=>$_SESSION['user_id']
+    ]);
+    $tareas = $statement ->fetchAll(PDO::FETCH_ASSOC);   //Extraer todas las filas en un array.
+
 
 
     /**
@@ -58,7 +67,7 @@
     <title>Lista de Tareas</title>
 </head>
 <body>
-    <?php if ($usuario): ?>
+    <?php if (!$usuario): ?>
         <h1 style="color: blue;"><strong><?= "Bienvenido ,  " . htmlspecialchars($usuario = $_SESSION['email'])?></strong></h1>
     <?php endif; ?> 
     <ul>
@@ -95,6 +104,7 @@
         <textarea name="descripcion"></textarea><br><br>
         
         <button type="submit">Guardar Tarea</button>
+        <a href="logout.php">Cerrar Sesión</a>
     </form>
 </body>
 </html>

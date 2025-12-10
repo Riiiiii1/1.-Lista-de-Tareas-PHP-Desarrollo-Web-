@@ -18,7 +18,9 @@
             $statement = $pdo->prepare($sql);   // User prepare y no query, ya que enviamos datos.
             try{  
                 if($statement -> execute([':email'=> $email,':contrasena'=> $contrasena,])){
-                    $mensaje = "Usuario Creado! <a href='login.php'>Ir al Login</a>";
+                    $mensaje = "Usuario Creado!";
+                    header('Location: login.php');
+                    exit();
                 }
             }catch(PDOException $e){
                 if($e->getCode()==23000){    // Si el error es de codigo 23000, quiere decir que en la base de datos ya existe un registro con esos datos.

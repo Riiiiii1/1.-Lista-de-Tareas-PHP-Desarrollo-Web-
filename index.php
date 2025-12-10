@@ -4,7 +4,17 @@
      * como punto de enlace y autenticacion.
      */
 
+    session_start(); // Iniciamos la sesión para poder leer $_SESSION
+
+    // Determinar si en la $_SESSION se encuentra user_id, si no es asi, lo devuelve a login.
+    if (!isset($_SESSION['user_id'])) {
+        header('Location: login.php');
+        exit;
+    }
+
+
     require 'conexion.php';
+    $usuario = "puta";
     $mensaje = "";
     $tipoSentencia = "";
     // Step 1:  Si el metodo request es igual a INSERCION (POST) ejecuta lo siguiente. 
@@ -48,7 +58,9 @@
     <title>Lista de Tareas</title>
 </head>
 <body>
-    <h1>Mis Tareas</h1>
+    <?php if ($usuario): ?>
+        <h1 style="color: blue;"><strong><?= "Bienvenido ,  " . htmlspecialchars($usuario = $_SESSION['email'])?></strong></h1>
+    <?php endif; ?> 
     <ul>
         <?php foreach ($tareas as $tarea): ?>
             <li>

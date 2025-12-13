@@ -85,7 +85,12 @@
         $sql = "SELECT * FROM tareas WHERE user_id = :user_id $search_sql  ORDER BY creado_en DESC";
         $params[':user_id'] = $user_id; // Marcador :user_id es igual a user_id de SESSION.
     }
-
+        /**
+         * IMPORTANTE! : Existe un error de parametro, cuando se quiere buscar por una sola variable, la base de datos espera
+         * dos. Por ello, la solución a este problema seria agregar las dos variables titulo y descripcion. Pero algo mas 
+         * facil seria habilitar el modo simulado. En este caso hicimos el modo simulado. De todas formas, este problema se 
+         * corrige en frameworks de alto nivel.
+         */
         $statement = $pdo->prepare($sql);
         $statement->execute($params); 
         $tareas = $statement->fetchAll(PDO::FETCH_ASSOC);

@@ -4,7 +4,7 @@
      * seguridad. En esta versión simple, se envia mediante un formulario los dos campos unicos de email y contrasena.
      */
 
-    require 'conexion.php';
+    require 'config/conexion.php';
     $mensaje = "";
     // Step 1:  Si el metodo request es igual a INSERCION (POST) ejecuta lo siguiente. 
     

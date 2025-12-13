@@ -6,7 +6,7 @@
     */
 
     // Step 1: Listar el id, y simplemente ejecutar un statement con una sentencia cargada.
-    require 'conexion.php';
+    require 'config/conexion.php';
     $id = $_GET['id'] ?? null;
     if (!$id) {
         header('Location: index.php');

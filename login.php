@@ -4,7 +4,7 @@
      * Toda ruta protegida debe iniciar session_start();
      */
     session_start();
-    require 'conexion.php';
+    require 'config/conexion.php';
 
     $mensaje = '';
     

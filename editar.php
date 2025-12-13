@@ -3,7 +3,7 @@
  * Este archivo implementa la actualización de datos mediante Update, en este caso, al ser llamado por un boton editar
  * se captura el id actual. Primero se lee el id, luego se vuelve a cargar el nuevo dato en el campo.
  */
-    require 'conexion.php';
+    require 'config/conexion.php';
     // Step 1: Obtener el id actual de la tarea seleccionada (GET)
     $id = $_GET['id'] ?? null;
     if(!$id){                                   //Si no existe id, devolver a index.php, usando header.

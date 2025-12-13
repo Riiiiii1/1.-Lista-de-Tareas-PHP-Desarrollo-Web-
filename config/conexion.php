@@ -23,7 +23,7 @@
             PDO::ATTR_EMULATE_PREPARES => false,              //    Desactiva la emulacion de consultas preparadas
         ];
         $pdo = new PDO($dsn,$usuario,$contrasena,$opciones); //     Crear la instancia 
-        echo('Conectado');
+        //echo('Conectado');  CUIDADO ! 
     }catch(PDOException $e){
 
         die('Error en la conexion: ' . $e -> getMessage());

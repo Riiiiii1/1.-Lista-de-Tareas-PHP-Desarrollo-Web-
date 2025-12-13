@@ -5,15 +5,13 @@
      */
 
     session_start(); // Iniciamos la sesión para poder leer $_SESSION
-
+    require 'config/conexion.php';
     // Determinar si en la $_SESSION se encuentra user_id, si no es asi, lo devuelve a login.
     if (!isset($_SESSION['user_id'])) {
         header('Location: login.php');
         exit;
     }
 
-
-    require 'conexion.php';
     $usuario = "";
     $mensaje = "";
     $tipoSentencia = "";
@@ -32,6 +30,10 @@
                 ':user_id'=>$_SESSION['user_id']   // NUEVO : Enviar a que usuario pertenece esa tarea
                 ])){ //Si se ejecuta, envia true
                 $mimensaje  = "Sentencia " . $tipoSentencia . "ejecutada con exito.";
+                header("Location: index.php?ok=1");  // IMPORTANTE : Al momento de recargar la pagina, se realiza una nueva tarea.
+                                                            // Para evitarlo, se debe cortar el flujo POST , mediante un Ok.
+                                                            // Esto se llama : Form Resubmission
+                exit;
             }else{
                 $mimensaje = "Sentencia " . $tipoSentencia . "fallo.";
             }
@@ -49,62 +51,13 @@
         ':user_id'=>$_SESSION['user_id']
     ]);
     $tareas = $statement ->fetchAll(PDO::FETCH_ASSOC);   //Extraer todas las filas en un array.
-
-
-
     /**
      * MEDIDA DE SEGURIDAD BASICA IMPORTANTE CONTRA XSS:
      * Para evitar inyecciones sql, al ingresar una tarea y al volver a cargar esa tarea, el navegador interpreta el codigo.
      * Si es que no se ejecuto una medida de proteccion. Para ello se usa htmlspecialchars para evitar que el navegador cargue 
      * codigo malisioso al cargar el html. 
      */
+    // CARGAR
+    require 'views/index.view.php';
 ?>
 
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Lista de Tareas</title>
-</head>
-<body>
-    <?php if (!$usuario): ?>
-        <h1 style="color: blue;"><strong><?= "Bienvenido ,  " . htmlspecialchars($usuario = $_SESSION['email'])?></strong></h1>
-    <?php endif; ?> 
-    <ul>
-        <?php foreach ($tareas as $tarea): ?>
-            <li>
-                <strong><?= htmlspecialchars($tarea['titulo']) ?></strong> 
-                
-                <?php if ($tarea['completada']): ?>
-                    <span style="color: green;">(Completada)</span>
-                <?php else: ?>
-                    <span style="color: red;">(Pendiente)</span>
-                <?php endif; ?>
-                
-                <a href="editar.php?id=<?= $tarea['id'] ?>">Editar</a>
-                <a href="eliminar.php?id=<?= $tarea['id'] ?>" 
-                onclick="return confirm('¿Estás seguro de que quieres borrar esta tarea?');"
-                style="color: red;">Eliminar
-                </a>
-            </li>
-        <?php endforeach; ?>
-
-
-    </ul>
-    
-    <?php if ($mensaje): ?>
-        <p style="color: blue;"><strong><?= $mensaje ?></strong></p>
-    <?php endif; ?> 
-
-    <form action="index.php" method="POST">
-        <label>Título:</label><br>
-        <input type="text" name="titulo" required><br><br>
-        
-        <label>Descripción:</label><br>
-        <textarea name="descripcion"></textarea><br><br>
-        
-        <button type="submit">Guardar Tarea</button>
-        <a href="logout.php">Cerrar Sesión</a>
-    </form>
-</body>
-</html>

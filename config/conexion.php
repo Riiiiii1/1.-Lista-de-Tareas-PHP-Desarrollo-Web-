@@ -20,10 +20,10 @@
         $opciones =[
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,      //    Activar modo de errores por excepcion
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC, //    Activar el envio de un arreglo asociativo usando fetch()
-            PDO::ATTR_EMULATE_PREPARES => false,              //    Desactiva la emulacion de consultas preparadas
+            PDO::ATTR_EMULATE_PREPARES => true,              //    Desactiva la emulacion de consultas preparadas
         ];
         $pdo = new PDO($dsn,$usuario,$contrasena,$opciones); //     Crear la instancia 
-        //echo('Conectado');  CUIDADO ! 
+        //echo('Conectado');  CUIDADO , al ejecutar echo, modifica la naturaleza del servidor enviando un html completo y no una respuesta! 
     }catch(PDOException $e){
 
         die('Error en la conexion: ' . $e -> getMessage());

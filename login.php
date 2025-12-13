@@ -32,7 +32,7 @@
                 // Step 4: Guardar los datos de la sesion iguales al id del usuario y al email del mismo.
                 $_SESSION['user_id'] = $usuario['id'];
                 $_SESSION['email'] = $usuario['email'];
-                
+                $_SESSION['rol'] = $usuario['rol'];  // NUEVO : Definir un Rol, en este caso tambien se envia el rol si coincide con el email del admin.
                 header('Location: index.php');
                 exit;
             }else{

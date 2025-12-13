@@ -11,12 +11,13 @@
         header('Location: login.php');
         exit;
     }
+    $rol = $_SESSION['rol'] ?? 'usuario'; // NUEVO: Tras un login, si existe una variable guardada en rol, entonces lo definimos.
+    
 
     $usuario = "";
     $mensaje = "";
     $tipoSentencia = "";
     // Step 1:  Si el metodo request es igual a INSERCION (POST) ejecuta lo siguiente. 
-
     if($_SERVER['REQUEST_METHOD'] == 'POST'){
         $tipoSentencia = 'POST';
         $titulo = $_POST['titulo'];                     // Recibir las variables desde el formulario.
@@ -45,12 +46,22 @@
      * Tener en cuenta es un listado inmediato, sin pasar ningun parametro por lo que usamos query() 
      * Si se utilizara query(), en una consulta con parametros, hay riesgo de una inyeccion sql.
      */
-    $sql = "SELECT * FROM tareas WHERE user_id = :user_id ORDER BY creado_en DESC";
-    $statement = $pdo->prepare($sql);  //NUEVO :  Usamos prepare porque es una lista contralada de tareas en funcion del usuario.
-    $statement -> execute([
-        ':user_id'=>$_SESSION['user_id']
-    ]);
-    $tareas = $statement ->fetchAll(PDO::FETCH_ASSOC);   //Extraer todas las filas en un array.
+    if ($rol === 'admin') {
+        // MODO DIOS: Traer todo + el email del dueño de la tarea
+        // Aquí introducimos INNER JOIN: Unimos la tabla tareas con usuarios
+        $sql = "SELECT tareas.*, usuarios.email as autor 
+                FROM tareas 
+                INNER JOIN usuarios ON tareas.user_id = usuarios.id 
+                ORDER BY creado_en DESC";
+        $stmt = $pdo->query($sql); // query() directo porque no hay parámetros WHERE
+    } else {
+        // MODO MORTAL: Solo mis tareas
+        $sql = "SELECT * FROM tareas WHERE user_id = :user_id ORDER BY creado_en DESC";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([':user_id' =>$_SESSION['user_id']  ]);
+    }
+
+    $tareas = $stmt->fetchAll(PDO::FETCH_ASSOC);
     /**
      * MEDIDA DE SEGURIDAD BASICA IMPORTANTE CONTRA XSS:
      * Para evitar inyecciones sql, al ingresar una tarea y al volver a cargar esa tarea, el navegador interpreta el codigo.

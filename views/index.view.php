@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -21,6 +20,11 @@
                     style="<?= $tarea['completada'] ? 'text-decoration: line-through;' : '' ?>">
                     <?= htmlspecialchars($tarea['titulo']) ?>
                 </span>
+                
+                <?php if (isset($tarea['autor'])): ?>
+                    <small style="color: gray;">(De: <?= htmlspecialchars($tarea['autor']) ?>)</small>
+                <?php endif; ?>
+                
                 <a href="editar.php?id=<?= $tarea['id'] ?>">Editar</a>
                 <a href="eliminar.php?id=<?= $tarea['id'] ?>" 
                 onclick="return confirm('¿Estás seguro de que quieres borrar esta tarea?');"
@@ -28,19 +32,15 @@
                 </a>
             </li>
         <?php endforeach; ?>
-
-
     </ul>
- <script>
-    // Seleccionamos todos los checkboxes
+    
+    <script>
     const checkboxes = document.querySelectorAll('.check-tarea');
 
     checkboxes.forEach(box => {
         box.addEventListener('change', function() {
-            const id = this.dataset.id; // Obtenemos el ID de la tarea
+            const id = this.dataset.id; 
             const texto = document.getElementById('texto-' + id);
-
-            // LLAMADA AJAX (FETCH)
             fetch('api/toggle_tarea.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -65,7 +65,8 @@
             .catch(error => console.error('Error:', error));
         });
     });
-</script>   
+    </script>   
+    
     <?php if (!$mensaje): ?>
         <p style="color: blue;"><strong><?= $mensaje ?></strong></p>
     <?php endif; ?> 

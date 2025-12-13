@@ -13,19 +13,25 @@
         header('Location: index.php');
         exit;
     }
-    $user_id = $_SESSION['user_id'];
+    $rol = $_SESSION['rol'] ?? null; 
+    $user_id = $_SESSION['user_id'] ?? null;
+        // Para superusuarios o admin   
+    if($rol == 'admin'){ // NUEVO: CODICIONAL QUE VERIFICA QUE EL USUARIO ES ADMINISTRADOR O NO, SI ES ADMINISTRADOR, ENTONCES
+                        // PUEDE BORRAR UNA TAREA.
+        $sql = "DELETE FROM tareas WHERE id = :id";  // Eliminar por el id.
+        $params = [':id' => $id];
+    }else{
+        // Para usuarios normales
+        $sql = "DELETE FROM tareas WHERE id = :id AND user_id = :user_id"; // Eliminar por id, y por user_id, si pertenece a esa tarea.
+        $params = [':id' => $id, ':user_id' => $user_id];
+    }
     try{
-        $sql = "DELETE FROM tareas WHERE id = :id AND user_id = :user_id";
-        $statement = $pdo ->prepare($sql);
-        $statement->execute([
-            ':id' =>$id,
-            ':user_id' => $user_id  //NUEVO : Integramos y enviamos el user_id para que solo el usuario que lo creo, lo borre.
-        ]);
+        $statement =$pdo->prepare($sql);
+        $statement->execute($params);
         header('Location: index.php'); // Despues de borrar redireccionar
         exit;
     }catch(PDOException $e){
         die('Error al Eliminar'. $e->getMessage());
     }
 
-    
 ?>

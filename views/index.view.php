@@ -5,8 +5,23 @@
     <title>Lista de Tareas</title>
 </head>
 <body>
+    <form action="index.php" method="GET" style="margin-bottom: 20px;">
+    <input type="text" 
+           name="busqueda" 
+           placeholder="Buscar tarea..." 
+           value="<?= htmlspecialchars($_GET['busqueda'] ?? '') ?>">
+    <button type="submit">Buscar</button>
+    
+    <?php if (!empty($_GET['busqueda'])): ?>
+        <a href="index.php" style="margin-left: 10px;">Limpiar</a>
+    <?php endif; ?>
+</form>
     <?php if (!$usuario): ?>
-        <h1 style="color: blue;"><strong><?= "Bienvenido ,  " . htmlspecialchars($usuario = $_SESSION['email'])?></strong></h1>
+        <h1 style="color: blue;"><strong><?= "Bienvenido ,  " . htmlspecialchars($usuario = $_SESSION['email'])?></strong>
+        <?php if ($_SESSION['rol'] == 'admin'): ?>
+            <h1> Administrador </h1>
+        <?php endif; ?> 
+    </h1>
     <?php endif; ?> 
     <ul>
         <?php foreach ($tareas as $tarea): ?>
@@ -41,6 +56,7 @@
         box.addEventListener('change', function() {
             const id = this.dataset.id; 
             const texto = document.getElementById('texto-' + id);
+            // Fech al endpoint
             fetch('api/toggle_tarea.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },

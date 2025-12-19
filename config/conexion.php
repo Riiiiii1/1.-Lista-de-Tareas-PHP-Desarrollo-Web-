@@ -1,32 +1,13 @@
 <?php
-    /**
-     * Para conectar a una base de datos vamos a usar PDOException ya que usar otros metodos inseguros y anticuados como 
-     * mysql_connect, aparte de facilitar el uso de Sentencias Preparadas para evitar inyecciones SQL.
-     */
+/**
+ * En este archivo, se encontraba la conexión a la base de datos, pero ahora llamamos a Database.php y su función para ejecutarse.
+ * Sin romper los otros archivos.
+ */
+    // __DIR__ es para que PHP busque la ruta relativa a la carpeta
+    require_once __DIR__ . '/../classes/Database.php';
 
-    // Step 1: Definir los parametros para la conexion de una base de datos en Laragon
-
-    $host = 'localhost';    // Puerto de la base de datos
-    $dbname = 'tareas_php'; // Definir de la base de datos a la que se conectara
-    $usuario = 'root';       // Credenciales de acceso  
-    $contrasena = '';
-
-    /*
-    * Dentro de un bloque de manejos try-catch, hacemos una instancia a la clase PDO, si es que hay un error.
-    */
-    try{
-        // Step 2: Definir un objeto DSN, opciones de sentencias preparadas, y pasarlas por el objeto PDO.
-        $dsn = "mysql:host=$host;dbname=$dbname;charset=utf8mb4";
-        $opciones =[
-            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,      //    Activar modo de errores por excepcion
-            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC, //    Activar el envio de un arreglo asociativo usando fetch()
-            PDO::ATTR_EMULATE_PREPARES => true,              //    Desactiva la emulacion de consultas preparadas
-        ];
-        $pdo = new PDO($dsn,$usuario,$contrasena,$opciones); //     Crear la instancia 
-        //echo('Conectado');  CUIDADO , al ejecutar echo, modifica la naturaleza del servidor enviando un html completo y no una respuesta! 
-    }catch(PDOException $e){
-
-        die('Error en la conexion: ' . $e -> getMessage());
-    }
+    // Instanciar la clase, y creamos el objeto. 
+    $db = new Database();
+    $pdo = $db -> conectar();
 
 ?>

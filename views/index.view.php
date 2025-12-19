@@ -16,13 +16,6 @@
         <a href="index.php" style="margin-left: 10px;">Limpiar</a>
     <?php endif; ?>
 </form>
-    <?php if (!$usuario): ?>
-        <h1 style="color: blue;"><strong><?= "Bienvenido ,  " . htmlspecialchars($usuario = $_SESSION['email'])?></strong>
-        <?php if ($_SESSION['rol'] == 'admin'): ?>
-            <h1> Administrador </h1>
-        <?php endif; ?> 
-    </h1>
-    <?php endif; ?> 
     <ul>
         <?php foreach ($tareas as $tarea): ?>
             <li>
@@ -83,9 +76,6 @@
     });
     </script>   
     
-    <?php if (!$mensaje): ?>
-        <p style="color: blue;"><strong><?= $mensaje ?></strong></p>
-    <?php endif; ?> 
 
     <form action="index.php" method="POST">
         <label>Título:</label><br>

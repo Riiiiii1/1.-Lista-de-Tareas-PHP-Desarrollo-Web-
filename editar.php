@@ -6,6 +6,7 @@
  */
     session_start();
     require 'config/conexion.php';
+    require_once 'classes/Tarea.php';
     // Step 1: Obtener el id actual de la tarea seleccionada (GET)
     $id = $_GET['id'] ?? null;
     if(!$id){                                   //Si no existe id, devolver a index.php, usando header.
@@ -19,32 +20,17 @@
         header('Location: index.php');  
         exit('Usted No esta Loggeado');
     }
-
+    $tareas = new Tarea($pdo);
     // Step 2:  Si el metodo request es igual a INSERCION (POST) y se pulsa Actualizar ejecuta lo siguientE
     if($_SERVER['REQUEST_METHOD']== 'POST'){
         $titulo = $_POST['titulo'];
         $descripcion = $_POST['descripcion'];   
- 
-        if($rol == 'admin'){ // VERIFICAR SI ES ADMINISTRADOR
-            $sql_update = "UPDATE tareas SET titulo = :titulo, descripcion = :descripcion WHERE id = :id";
-            $params = [':titulo'=>$titulo,':descripcion'=>$descripcion, ':id'=>$id ];
-        }else{
-            $sql_update = "UPDATE tareas SET titulo = :titulo, descripcion = :descripcion WHERE id = :id AND user_id = :user_id";
-            $params = [':titulo'=>$titulo,':descripcion'=>$descripcion,':id'=>$id, ':user_id'=>$user_id];
-        }
-        try{
-            $statement = $pdo->prepare($sql_update);
-            $statement->execute($params);
+            $tareas->editar($titulo,$descripcion,$id,$rol,$user_id);
             header('Location: index.php');  // Redireccionar a la pagina principal (READ)
             exit;
-        }catch(PDOException $e){
-            die('La actualización fallo' . $e->getMessage());
-        }
+
     }
-    // Step 3: Incluimos una funcion de listar en el formulario (inputs), para que el usuario vea el registro anterior. 
-    $statement = $pdo->prepare('SELECT * FROM tareas WHERE id = :id');  // Preparar la sentencia para listar con select
-    $statement ->execute([ ':id' => $id ]);                             // Cargar el unico parametro que es el id.
-    $tarea = $statement ->fetch(PDO::FETCH_ASSOC);                     // Fech ya que solo se espera un registro no un array.
+    $tarea = $tareas ->obtenerPorId($id,$user_id,$rol);
     if(!$tarea){
         die('La Tarea que busca no se encuentra en la base de datos.');
     }

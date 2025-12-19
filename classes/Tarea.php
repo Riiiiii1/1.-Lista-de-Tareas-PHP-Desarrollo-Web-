@@ -81,5 +81,41 @@ class Tarea{
             ':user_id'=>$user_id
         ]);
     }
+    public function eliminar($rol,$user_id,$id){
+        if($rol == "admin"){
+            $sql = "DELETE FROM tareas WHERE id = :id";  // Eliminar por el id.
+            $params = [':id' => $id];
+        }else{
+            $sql = "DELETE FROM tareas WHERE id = :id AND user_id = :user_id"; // Eliminar por id, y por user_id, si pertenece a esa tarea.
+            $params = [':id' => $id, ':user_id' => $user_id];
+        }
+        $statement = $this->pdo ->prepare($sql);
+        return $statement -> execute($params);
+    }
+
+    public function editar($titulo,$descripcion,$id, $rol, $user_id){
+        if($rol == "admin"){
+            $sql = "UPDATE tareas SET titulo = :titulo, descripcion = :descripcion WHERE id =:id";
+            $params = [':titulo'=>$titulo,':descripcion'=>$descripcion, ':id'=>$id ];
+        }else{
+            $sql = "UPDATE tareas SET titulo = :titulo, descripcion = :descripcion WHERE id = :id AND user_id = :user_id";
+            $params = [':titulo'=>$titulo,':descripcion'=>$descripcion,':id'=>$id, ':user_id'=>$user_id];
+        }
+        $statement = $this ->pdo ->prepare($sql);
+        return $statement ->execute($params);
+    }
+    public function obtenerPorId($id, $user_id, $rol){
+        if ($rol === 'admin') {
+            $sql = "SELECT * FROM tareas WHERE id = :id";
+            $params = [':id' => $id];
+        } else {
+            $sql = "SELECT * FROM tareas WHERE id = :id AND user_id = :user_id";
+            $params = [':id' => $id, ':user_id' => $user_id];
+        }
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
 }
 ?>
